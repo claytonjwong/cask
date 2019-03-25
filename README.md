@@ -1,37 +1,59 @@
 # cask
 
-## use generated cask to perform install / execution / uninstall
-
-### Input
+## initial setup
 ```
-cp /Users/clayton.wong/workspace/cask/testing.rb /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/
+# fork the repository and add your copy as a remote -> I believe this only needs to be done once
+
+TODO: hub fork command for 'teamookla' ( permissions ) 
+
+GITHUB_USER='claytonjwong'
+cd "$(brew --repository)"/Library/Taps/homebrew/homebrew-cask
+git remote add "${GITHUB_USER}" "https://github.com/${GITHUB_USER}/homebrew-cask"
+```
+
+## test locally: use generated cask to perform install / execution / uninstall
+```
+WORKSPACE=/Users/clayton.wong/workspace/cask/
+CASK=testing.rb
+WORKSPACE_CASK=${WORKSPACE}/${CASK}
+brew cask audit ${WORKSPACE_CASK}
+brew cask style --fix ${WORKSPACE_CASK}
+HOMEBREW="$(brew --repository)"/Library/Taps/homebrew/homebrew-cask
+HOMEBREW_CASKS=${HOMEBREW}/Casks
+cp ${WORKSPACE_CASK} ${HOMEBREW_CASKS}
 export HOMEBREW_NO_AUTO_UPDATE=1
 brew cask install testing
 testing
 brew cask uninstall testing
-
 ```
 
-### Output
-```
-Claytons-MacBook-Pro:~ clayton.wong$ cp /Users/clayton.wong/workspace/cask/testing.rb /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask/Casks/
-Claytons-MacBook-Pro:~ clayton.wong$ export HOMEBREW_NO_AUTO_UPDATE=1
-Claytons-MacBook-Pro:~ clayton.wong$ brew cask install testing
-==> Satisfying dependencies
-==> Downloading https://github.com/claytonjwong/cask/raw/master/testing.tgz
-==> Downloading from https://raw.githubusercontent.com/claytonjwong/cask/master/testing.tgz
-######################################################################## 100.0%
-==> Verifying SHA-256 checksum for Cask 'testing'.
-==> Installing Cask testing
-==> Linking Binary 'testing' to '/usr/local/bin/testing'.
-🍺  testing was successfully installed!
-Claytons-MacBook-Pro:~ clayton.wong$ testing
-hello world!
-Claytons-MacBook-Pro:~ clayton.wong$ brew cask uninstall testing
-==> Uninstalling Cask testing
-==> Unlinking Binary '/usr/local/bin/testing'.
-==> Purging files for version 1.0.0 of Cask testing
-```
 
-## use hub cli to perform cask fork, add/ci/push, and PR
+## push to remote: audit/style check, add/commit/push to homebrew-cask fork, and open PR
+```
+GITHUB_USER=claytonjwong
+WORKSPACE=/Users/clayton.wong/workspace/cask/
+CASK=testing.rb
+WORKSPACE_CASK=${WORKSPACE}/${CASK}
+brew cask audit ${WORKSPACE_CASK}
+brew cask style --fix ${WORKSPACE_CASK}
+HOMEBREW="$(brew --repository)"/Library/Taps/homebrew/homebrew-cask
+HOMEBREW_CASKS=${HOMEBREW}/Casks
+VERSION=1.0.0
+FEATURE=testing-${VERSION}
+BRANCH=feature/${FEATURE}
+cd ${HOMEBREW}
+git co master
+git pull
+git co -b ${BRANCH}
+cp ${WORKSPACE_CASK} ${HOMEBREW_CASKS}
+git add ${HOMEBREW_CASKS}/${CASK}
+git ci -m "add ${FEATURE}"
+git push --set-upstream origin ${BRANCH}
 
+
+hub pull-request https://github.com/${GITHUB_USER}/homebrew-cask/pull/new/${BRANCH}
+
+
+yes | git-delete.sh ${BRANCH}
+
+```
