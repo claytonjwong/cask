@@ -7,7 +7,9 @@
 TODO: hub fork command for 'teamookla' ( permissions ) 
 
 GITHUB_USER='claytonjwong'
-cd "$(brew --repository)"/Library/Taps/homebrew/homebrew-cask
+cd "$(brew --repository)"/Library/Taps/homebrew
+git clone git@github.com:claytonjwong/homebrew-cask.git
+cd homebrew-cask
 git remote add "${GITHUB_USER}" "https://github.com/${GITHUB_USER}/homebrew-cask"
 ```
 
